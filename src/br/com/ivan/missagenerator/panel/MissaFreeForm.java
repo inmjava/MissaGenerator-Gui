@@ -353,7 +353,7 @@ public class MissaFreeForm extends JPanel implements Painel {
 						+ StringUtils.rightPad(musica2.getId() + ":", 5) + " "
 						+ StringUtils.rightPad(m.getNome() + ":", 20) + " "
 						+ StringUtils.rightPad(musica2.getNome() + "", 0);
-				provider.addCompletion(new ShorthandCompletion(provider, musica2.getNome(), textoMusica, musica2.getApresentacao()));
+				provider.addCompletion(new ShorthandCompletion(provider, m.getNome() + " - " + musica2.getNome(), textoMusica, musica2.getApresentacao()));
 			}
 		}
 		AutoCompletion ac = new AutoCompletion(provider);
