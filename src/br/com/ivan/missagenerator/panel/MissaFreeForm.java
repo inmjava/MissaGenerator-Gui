@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -32,6 +33,11 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 
 import org.apache.commons.lang3.StringUtils;
+import org.fife.ui.autocomplete.AutoCompletion;
+import org.fife.ui.autocomplete.BasicCompletion;
+import org.fife.ui.autocomplete.CompletionProvider;
+import org.fife.ui.autocomplete.DefaultCompletionProvider;
+import org.fife.ui.autocomplete.ShorthandCompletion;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
@@ -222,8 +228,8 @@ public class MissaFreeForm extends JPanel implements Painel {
 
 		JScrollPane scrollPane = new RTextScrollPane(txtMissa);
 		splitPane_1.setLeftComponent(scrollPane);
-		
-		//txtMissa.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+
+		// txtMissa.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
 		txtMissa.setCodeFoldingEnabled(false);
 		txtMissa.getInputMap().put(KeyStroke.getKeyStroke("control F"), MissaFreeForm.MAKE_FILTER_FOCUS);
 		txtMissa.getActionMap().put(MissaFreeForm.MAKE_FILTER_FOCUS, new AbstractAction() {
@@ -301,6 +307,33 @@ public class MissaFreeForm extends JPanel implements Painel {
 		panel.add(btnNewButton_3);
 	}
 
+	/**
+	 * Create a simple provider that adds some Java-related completions.
+	 */
+	private CompletionProvider createCompletionProvider() {
+
+		// A DefaultCompletionProvider is the simplest concrete implementation
+		// of CompletionProvider. This provider has no understanding of
+		// language semantics. It simply checks the text entered up to the
+		// caret position for a match against known completions. This is all
+		// that is needed in the majority of cases.
+		DefaultCompletionProvider provider = new DefaultCompletionProvider();
+
+		MusicaDao musicaDao = MusicaDaoFactory.createMusicaDao();
+		try {
+			Collection<Musica> musicas = musicaDao.listar();
+			for (Musica musica : musicas) {
+				provider.addCompletion(new BasicCompletion(provider, musica.getNome(), musica.getApresentacao()));
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return provider;
+
+	}
+
 	private void carregarMomentos(String filtro) throws Exception {
 		cboMomentos.removeAllItems();
 		Collection<Momento> momentos = null;
@@ -310,9 +343,23 @@ public class MissaFreeForm extends JPanel implements Painel {
 		} else {
 			momentos = momentoDao.listarMomentosPorFiltroMusica(filtro);
 		}
+		
+		DefaultCompletionProvider provider = new DefaultCompletionProvider();
 		for (Momento m : momentos) {
 			cboMomentos.addItem(m);
+			Set<Musica> musicas = m.getMusicas();
+			for (Musica musica2 : musicas) {
+				String textoMusica = StringUtils.rightPad(m.getId() + ":", 5)
+						+ StringUtils.rightPad(musica2.getId() + ":", 5) + " "
+						+ StringUtils.rightPad(m.getNome() + ":", 20) + " "
+						+ StringUtils.rightPad(musica2.getNome() + "", 0);
+				provider.addCompletion(new ShorthandCompletion(provider, musica2.getNome(), textoMusica, musica2.getApresentacao()));
+			}
 		}
+		AutoCompletion ac = new AutoCompletion(provider);
+		ac.install(txtMissa);
+		
+		
 	}
 
 	@Override
