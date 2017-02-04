@@ -31,5 +31,7 @@
 	<classpathentry kind="lib" path="libpoeandjgroups/sqlite-jdbc-3.8.11.2.jar"/>
 	<classpathentry kind="lib" path="libpoeandjgroups/stax-api-1.0.1.jar"/>
 	<classpathentry kind="lib" path="libpoeandjgroups/xmlbeans-2.6.0.jar"/>
+	<classpathentry kind="lib" path="lib/autocomplete-2.5.8.jar"/>
+	<classpathentry kind="lib" path="lib/rsyntaxtextarea-2.5.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

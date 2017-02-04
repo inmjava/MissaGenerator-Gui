@@ -32,6 +32,9 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 
 import org.apache.commons.lang3.StringUtils;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rtextarea.RTextScrollPane;
 
 import br.com.ivan.missagenerator.business.Processador;
 import br.com.ivan.missagenerator.frame.Painel;
@@ -54,7 +57,7 @@ public class MissaFreeForm extends JPanel implements Painel {
 	private JComboBox cboMusicas;
 	private String strFiltro;
 	private JTextArea txtApresentacao;
-	private JTextArea txtMissa;
+	private RSyntaxTextArea txtMissa;
 	private int linhaSelecionada;
 
 	/**
@@ -85,7 +88,6 @@ public class MissaFreeForm extends JPanel implements Painel {
 			}
 		});
 
-		
 		txtFiltro.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
@@ -105,37 +107,37 @@ public class MissaFreeForm extends JPanel implements Painel {
 		gbc_txtFiltro.gridy = 0;
 		add(txtFiltro, gbc_txtFiltro);
 		txtFiltro.setColumns(10);
-		
-				JButton btnNewButton = new JButton("Filtrar M\u00FAsica");
-				btnNewButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						filtrar();
-					}
-				});
-				
-				JButton btnFiltrar = new JButton("Filtrar Momento");
-				btnFiltrar.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						try {
-							filtrarMomentos();
-						} catch (Exception e1) {
-							JOptionPane.showMessageDialog(MissaFreeForm.this,
-									"Houve um erro durante a operação \"Filtrar momentos\", detalhes tecnicos: "
-											+ e1.getLocalizedMessage(),
-									"ERRO", JOptionPane.ERROR_MESSAGE);
-						}
-					}
-				});
-				GridBagConstraints gbc_btnFiltrar = new GridBagConstraints();
-				gbc_btnFiltrar.insets = new Insets(0, 0, 5, 5);
-				gbc_btnFiltrar.gridx = 2;
-				gbc_btnFiltrar.gridy = 0;
-				add(btnFiltrar, gbc_btnFiltrar);
-				GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
-				gbc_btnNewButton.insets = new Insets(0, 0, 5, 0);
-				gbc_btnNewButton.gridx = 3;
-				gbc_btnNewButton.gridy = 0;
-				add(btnNewButton, gbc_btnNewButton);
+
+		JButton btnNewButton = new JButton("Filtrar M\u00FAsica");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				filtrar();
+			}
+		});
+
+		JButton btnFiltrar = new JButton("Filtrar Momento");
+		btnFiltrar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					filtrarMomentos();
+				} catch (Exception e1) {
+					JOptionPane.showMessageDialog(MissaFreeForm.this,
+							"Houve um erro durante a operação \"Filtrar momentos\", detalhes tecnicos: "
+									+ e1.getLocalizedMessage(),
+							"ERRO", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		GridBagConstraints gbc_btnFiltrar = new GridBagConstraints();
+		gbc_btnFiltrar.insets = new Insets(0, 0, 5, 5);
+		gbc_btnFiltrar.gridx = 2;
+		gbc_btnFiltrar.gridy = 0;
+		add(btnFiltrar, gbc_btnFiltrar);
+		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
+		gbc_btnNewButton.insets = new Insets(0, 0, 5, 0);
+		gbc_btnNewButton.gridx = 3;
+		gbc_btnNewButton.gridy = 0;
+		add(btnNewButton, gbc_btnNewButton);
 
 		JLabel lblMomento = new JLabel("Momento");
 		GridBagConstraints gbc_lblMomento = new GridBagConstraints();
@@ -158,7 +160,7 @@ public class MissaFreeForm extends JPanel implements Painel {
 		gbc_cboMomentos.gridx = 1;
 		gbc_cboMomentos.gridy = 1;
 		add(cboMomentos, gbc_cboMomentos);
-		
+
 		JButton btnSalvarMissa = new JButton("Salvar Missa");
 		btnSalvarMissa.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -192,7 +194,7 @@ public class MissaFreeForm extends JPanel implements Painel {
 		gbc_cboMusicas.gridx = 1;
 		gbc_cboMusicas.gridy = 2;
 		add(cboMusicas, gbc_cboMusicas);
-		
+
 		JButton btnNewButton_1 = new JButton("Adicionar M\u00FAsica");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -204,7 +206,7 @@ public class MissaFreeForm extends JPanel implements Painel {
 		gbc_btnNewButton_1.gridx = 3;
 		gbc_btnNewButton_1.gridy = 2;
 		add(btnNewButton_1, gbc_btnNewButton_1);
-		
+
 		JSplitPane splitPane_1 = new JSplitPane();
 		splitPane_1.setResizeWeight(0.9);
 		splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
@@ -216,10 +218,13 @@ public class MissaFreeForm extends JPanel implements Painel {
 		gbc_splitPane_1.gridy = 3;
 		add(splitPane_1, gbc_splitPane_1);
 
-		JScrollPane scrollPane = new JScrollPane();
-		splitPane_1.setLeftComponent(scrollPane);
+		txtMissa = new RSyntaxTextArea(20, 60);
 
-		txtMissa = new JTextArea();
+		JScrollPane scrollPane = new RTextScrollPane(txtMissa);
+		splitPane_1.setLeftComponent(scrollPane);
+		
+		//txtMissa.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+		txtMissa.setCodeFoldingEnabled(false);
 		txtMissa.getInputMap().put(KeyStroke.getKeyStroke("control F"), MissaFreeForm.MAKE_FILTER_FOCUS);
 		txtMissa.getActionMap().put(MissaFreeForm.MAKE_FILTER_FOCUS, new AbstractAction() {
 			@Override
@@ -256,7 +261,6 @@ public class MissaFreeForm extends JPanel implements Painel {
 			}
 		});
 
-		
 		txtMissa.addCaretListener(new CaretListener() {
 			public void caretUpdate(CaretEvent arg0) {
 				selecionarMusicaCaretUpdate();
@@ -264,14 +268,14 @@ public class MissaFreeForm extends JPanel implements Painel {
 		});
 		txtMissa.setFont(new Font("Consolas", Font.PLAIN, 15));
 		scrollPane.setViewportView(txtMissa);
-		
-		txtApresentacao = new JTextArea();
-		
-		JScrollPane scrollPane2 = new JScrollPane();
+
+		txtApresentacao = new RSyntaxTextArea(20, 60);
+
+		JScrollPane scrollPane2 = new RTextScrollPane(txtApresentacao);
 		scrollPane2.setViewportView(txtApresentacao);
-		
+
 		splitPane_1.setRightComponent(scrollPane2);
-		
+
 		JPanel panel = new JPanel();
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.gridwidth = 4;
@@ -279,7 +283,7 @@ public class MissaFreeForm extends JPanel implements Painel {
 		gbc_panel.gridx = 0;
 		gbc_panel.gridy = 4;
 		add(panel, gbc_panel);
-		
+
 		JButton btnNewButton_2 = new JButton("Gerar PPT");
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -287,7 +291,7 @@ public class MissaFreeForm extends JPanel implements Painel {
 			}
 		});
 		panel.add(btnNewButton_2);
-		
+
 		JButton btnNewButton_3 = new JButton("Gerar DOCX");
 		btnNewButton_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -301,7 +305,7 @@ public class MissaFreeForm extends JPanel implements Painel {
 		cboMomentos.removeAllItems();
 		Collection<Momento> momentos = null;
 		MomentoDao momentoDao = MomentoDaoFactory.createMomentoDao();
-		if(filtro == null || filtro.equals("")){
+		if (filtro == null || filtro.equals("")) {
 			momentos = momentoDao.listar();
 		} else {
 			momentos = momentoDao.listarMomentosPorFiltroMusica(filtro);
@@ -360,36 +364,35 @@ public class MissaFreeForm extends JPanel implements Painel {
 			e.printStackTrace();
 		}
 	}
-	
-	private void filtrar(){
+
+	private void filtrar() {
 		strFiltro = txtFiltro.getText();
 		selecionarMomento();
 	}
-	
-	private void filtrarMomentos() throws Exception{
+
+	private void filtrarMomentos() throws Exception {
 		strFiltro = txtFiltro.getText();
 		carregarMomentos(strFiltro);
-		if(!strFiltro.equals("")){
+		if (!strFiltro.equals("")) {
 			adicionarMusica();
 		}
 		txtMissa.requestFocus();
 	}
-	
-	private void salvarMissa(){
+
+	private void salvarMissa() {
 		try {
 			Processador.salvarMissa(txtMissa.getText());
 			JOptionPane.showMessageDialog(this, "A Missa foi salva com sucesso!", "Informação",
 					JOptionPane.INFORMATION_MESSAGE);
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			JOptionPane.showMessageDialog(this,
-					"Houve um erro durante a operação \"salvarMissa\", detalhes tecnicos: "
-							+ e.getLocalizedMessage(),
+					"Houve um erro durante a operação \"salvarMissa\", detalhes tecnicos: " + e.getLocalizedMessage(),
 					"ERRO", JOptionPane.ERROR_MESSAGE);
 
 		}
 	}
-	
-	private void selecionarMusicaCombo(){
+
+	private void selecionarMusicaCombo() {
 		if (cboMusicas.getSelectedIndex() < 0)
 			return;
 		Musica musica = (Musica) cboMusicas.getSelectedItem();
@@ -401,12 +404,13 @@ public class MissaFreeForm extends JPanel implements Painel {
 		txtApresentacao.setText(apresentacao);
 		txtApresentacao.setCaretPosition(0);
 		try {
-			if(strFiltro != null && !strFiltro.equals("")){
+			if (strFiltro != null && !strFiltro.equals("")) {
 				int length = strFiltro.length();
 				int index = apresentacao.toUpperCase().indexOf(strFiltro.toUpperCase());
 				while (index >= 0) {
-					txtApresentacao.getHighlighter().addHighlight(index, index + length, new DefaultHighlighter.DefaultHighlightPainter(Color.pink));
-				    index = apresentacao.toUpperCase().indexOf(strFiltro.toUpperCase(), index + 1);
+					txtApresentacao.getHighlighter().addHighlight(index, index + length,
+							new DefaultHighlighter.DefaultHighlightPainter(Color.pink));
+					index = apresentacao.toUpperCase().indexOf(strFiltro.toUpperCase(), index + 1);
 				}
 			}
 			txtApresentacao.setCaretPosition(0);
@@ -414,53 +418,54 @@ public class MissaFreeForm extends JPanel implements Painel {
 			e.printStackTrace();
 		}
 	}
-	
-	private void makeFilterFocus(){
+
+	private void makeFilterFocus() {
 		txtFiltro.requestFocus();
 		txtFiltro.selectAll();
 	}
-	
-	private void makeMissaFocus(){
+
+	private void makeMissaFocus() {
 		txtMissa.requestFocus();
 	}
-	
-	private void previousMusic(){
+
+	private void previousMusic() {
 		int selectedIndex = cboMusicas.getSelectedIndex();
-		if(selectedIndex > 0){
+		if (selectedIndex > 0) {
 			cboMusicas.setSelectedIndex(selectedIndex - 1);
 		} else {
 			selectedIndex = cboMomentos.getSelectedIndex();
-			if(selectedIndex > 0) {
+			if (selectedIndex > 0) {
 				cboMomentos.setSelectedIndex(selectedIndex - 1);
 				int itemCount = cboMusicas.getItemCount();
-				if(itemCount > 0){
+				if (itemCount > 0) {
 					cboMusicas.setSelectedIndex(itemCount - 1);
 				}
 			}
 		}
 		adicionarMusica();
 	}
-	
-	private void nextMusic(){
+
+	private void nextMusic() {
 		int selectedIndex = cboMusicas.getSelectedIndex();
-		if(selectedIndex < cboMusicas.getItemCount() - 1){
+		if (selectedIndex < cboMusicas.getItemCount() - 1) {
 			cboMusicas.setSelectedIndex(selectedIndex + 1);
 		} else {
 			selectedIndex = cboMomentos.getSelectedIndex();
-			if(selectedIndex < cboMomentos.getItemCount() - 1){
+			if (selectedIndex < cboMomentos.getItemCount() - 1) {
 				cboMomentos.setSelectedIndex(selectedIndex + 1);
 			}
 		}
 		adicionarMusica();
 	}
-	
-	private void removeLineCaret(){
+
+	private void removeLineCaret() {
 		try {
 			int posicaoCursor = txtMissa.getCaretPosition();
 			int numLinha = txtMissa.getLineOfOffset(posicaoCursor);
 			int cursorInicioLinha = txtMissa.getLineStartOffset(numLinha);
 			int cursorFimLinha = txtMissa.getLineEndOffset(numLinha);
-			txtMissa.setText(txtMissa.getText().substring(0, cursorInicioLinha) + txtMissa.getText().substring(cursorFimLinha));
+			txtMissa.setText(
+					txtMissa.getText().substring(0, cursorInicioLinha) + txtMissa.getText().substring(cursorFimLinha));
 			txtMissa.setCaretPosition(cursorInicioLinha);
 		} catch (BadLocationException e) {
 			System.out.println("Problema com a posicao da linha");
@@ -470,18 +475,18 @@ public class MissaFreeForm extends JPanel implements Painel {
 			System.out.println("Verificar: " + e.getMessage());
 		}
 	}
-	
+
 	private void selecionarMusicaCaretUpdate() {
 		try {
 			int posicaoCursor = txtMissa.getCaretPosition();
 			int numLinha = txtMissa.getLineOfOffset(posicaoCursor);
 			int cursorInicioLinha = txtMissa.getLineStartOffset(numLinha);
 			int cursorFimLinha = txtMissa.getLineEndOffset(numLinha);
-			if(linhaSelecionada != numLinha){
+			if (linhaSelecionada != numLinha) {
 				linhaSelecionada = numLinha;
 				String linha = txtMissa.getText().substring(cursorInicioLinha, cursorFimLinha);
 				String[] elementos = linha.split(":");
-				if(StringUtils.isNumeric(elementos[0]) && StringUtils.isNumeric(elementos[1].trim())){
+				if (StringUtils.isNumeric(elementos[0]) && StringUtils.isNumeric(elementos[1].trim())) {
 					MusicaDao musicaDao = MusicaDaoFactory.createMusicaDao();
 					MomentoDao momentoDao = MomentoDaoFactory.createMomentoDao();
 					Momento momento = momentoDao.listar(Long.parseLong(elementos[0]));
@@ -498,7 +503,7 @@ public class MissaFreeForm extends JPanel implements Painel {
 			System.out.println("Verificar: " + e.getMessage());
 		}
 	}
-	
+
 	private void selecionarMomemtoEMusicaCaretUpdate(Momento momento, Musica musica) {
 		cboMomentos.setSelectedItem(momento);
 		cboMusicas.setSelectedItem(musica);
@@ -508,15 +513,18 @@ public class MissaFreeForm extends JPanel implements Painel {
 		try {
 			Musica musica = (Musica) cboMusicas.getSelectedItem();
 			Momento momento = (Momento) cboMomentos.getSelectedItem();
-			
+
 			int posicaoCursor = txtMissa.getCaretPosition();
 			int numLinha = txtMissa.getLineOfOffset(posicaoCursor);
 			int cursorInicioLinha = txtMissa.getLineStartOffset(numLinha);
 			int cursorFimLinha = txtMissa.getLineEndOffset(numLinha);
 			int lengthLinha = cursorFimLinha - cursorInicioLinha;
-			
+
 			String texto = txtMissa.getText();
-			txtMissa.setText(texto.substring(0, cursorInicioLinha) + StringUtils.rightPad(momento.getId()+":", 5) + StringUtils.rightPad(musica.getId()+":", 5) + " "  + StringUtils.rightPad(momento.getNome()+":", 20) + " "  + StringUtils.rightPad(musica.getNome()+"", 0) + "\n" + texto.substring(cursorFimLinha));
+			txtMissa.setText(texto.substring(0, cursorInicioLinha) + StringUtils.rightPad(momento.getId() + ":", 5)
+					+ StringUtils.rightPad(musica.getId() + ":", 5) + " "
+					+ StringUtils.rightPad(momento.getNome() + ":", 20) + " "
+					+ StringUtils.rightPad(musica.getNome() + "", 0) + "\n" + texto.substring(cursorFimLinha));
 			txtMissa.setCaretPosition(cursorInicioLinha);
 			txtMissa.requestFocus();
 		} catch (BadLocationException e) {
@@ -526,37 +534,33 @@ public class MissaFreeForm extends JPanel implements Painel {
 					"ERRO", JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
-	
-	
-	private void gerarPPT(){
+
+	private void gerarPPT() {
 		try {
 			Collection gerarMissaCollection = gerarMissaCollection();
-			if(!gerarMissaCollection.isEmpty()){
+			if (!gerarMissaCollection.isEmpty()) {
 				Processador.gerarPreviewApresentacao(gerarMissaCollection);
 			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(this,
-					"Houve um erro durante a operação \"gerarPPT\", detalhes tecnicos: "
-							+ e.getLocalizedMessage(),
+					"Houve um erro durante a operação \"gerarPPT\", detalhes tecnicos: " + e.getLocalizedMessage(),
 					"ERRO", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
-	private void gerarDOCX(){
+	private void gerarDOCX() {
 		try {
 			Collection gerarMissaCollection = gerarMissaCollection();
-			if(!gerarMissaCollection.isEmpty()){
+			if (!gerarMissaCollection.isEmpty()) {
 				Processador.gerarPreviewCifra(gerarMissaCollection);
 			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(this,
-					"Houve um erro durante a operação \"gerarDOCX\", detalhes tecnicos: "
-							+ e.getLocalizedMessage(),
+					"Houve um erro durante a operação \"gerarDOCX\", detalhes tecnicos: " + e.getLocalizedMessage(),
 					"ERRO", JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Collection gerarMissaCollection() throws NumberFormatException, Exception {
 		MusicaDao musicaDao = MusicaDaoFactory.createMusicaDao();
@@ -564,8 +568,8 @@ public class MissaFreeForm extends JPanel implements Painel {
 		String[] linhas = txtMissa.getText().split("\n");
 		for (String linha : linhas) {
 			String[] elementos = linha.split(":");
-			if(elementos.length <= 1)
-				continue ;
+			if (elementos.length <= 1)
+				continue;
 			// momento
 			missa.add(elementos[2].trim());
 			// música

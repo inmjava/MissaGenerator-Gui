@@ -21,6 +21,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.text.BadLocationException;
 
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rtextarea.RTextScrollPane;
+
 import br.com.ivan.missagenerator.business.Processador;
 import br.com.ivan.missagenerator.frame.Painel;
 import model.Momento;
@@ -586,14 +589,14 @@ public class CadastroMusicasPanel extends JPanel implements Painel {
 		gbc_splitPane.gridy = 5;
 		add(splitPane, gbc_splitPane);
 
-		txtCifraMusica = new JTextArea();
+		txtCifraMusica = new RSyntaxTextArea(20, 60);
 
-		JScrollPane scrollPane1 = new JScrollPane();
+		JScrollPane scrollPane1 = new RTextScrollPane(txtCifraMusica);
 		splitPane.setRightComponent(scrollPane1);
 		scrollPane1.setViewportView(txtCifraMusica);
 
-		txtApresentacao = new JTextArea();
-		JScrollPane scrollPane2 = new JScrollPane();
+		txtApresentacao = new RSyntaxTextArea(20, 60);
+		JScrollPane scrollPane2 = new RTextScrollPane(txtApresentacao);
 		splitPane.setLeftComponent(scrollPane2);
 		scrollPane2.setViewportView(txtApresentacao);
 
