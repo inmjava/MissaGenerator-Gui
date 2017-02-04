@@ -65,6 +65,7 @@ public class MissaFreeForm extends JPanel implements Painel {
 	private JTextArea txtApresentacao;
 	private RSyntaxTextArea txtMissa;
 	private int linhaSelecionada;
+	private AutoCompletion ac;
 
 	/**
 	 * Create the panel.
@@ -338,12 +339,16 @@ public class MissaFreeForm extends JPanel implements Painel {
 		cboMomentos.removeAllItems();
 		Collection<Momento> momentos = null;
 		MomentoDao momentoDao = MomentoDaoFactory.createMomentoDao();
+		if (ac != null){
+			ac.uninstall();
+		}
+		
 		if (filtro == null || filtro.equals("")) {
 			momentos = momentoDao.listar();
 		} else {
 			momentos = momentoDao.listarMomentosPorFiltroMusica(filtro);
 		}
-		
+ 		
 		DefaultCompletionProvider provider = new DefaultCompletionProvider();
 		for (Momento m : momentos) {
 			cboMomentos.addItem(m);
@@ -356,10 +361,8 @@ public class MissaFreeForm extends JPanel implements Painel {
 				provider.addCompletion(new ShorthandCompletion(provider, m.getNome() + " - " + musica2.getNome(), textoMusica, musica2.getApresentacao()));
 			}
 		}
-		AutoCompletion ac = new AutoCompletion(provider);
+		ac = new AutoCompletion(provider);
 		ac.install(txtMissa);
-		
-		
 	}
 
 	@Override
